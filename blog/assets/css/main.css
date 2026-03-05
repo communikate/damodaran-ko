@@ -1,6 +1,4 @@
 /* 다모다란 한국어 번역 블로그 - 기본 스타일 */
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
-
 :root {
   --text-color: #1a1a1a;
   --muted-color: #666;
