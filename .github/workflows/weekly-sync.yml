@@ -1,0 +1,118 @@
+name: Weekly Sync & Deploy
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # 매주 월요일 09:00 UTC (한국 18:00)
+  workflow_dispatch:       # 수동 실행 가능
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  # ──────────────────────────────────────────
+  # Job 1: 신규 포스팅 번역 (증분 모드)
+  # ──────────────────────────────────────────
+  sync-and-translate:
+    runs-on: ubuntu-latest
+    outputs:
+      new_posts: ${{ steps.check.outputs.new_posts }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          pip install requests beautifulsoup4 lxml
+
+      - name: Run feed fetcher (incremental mode)
+        run: |
+          python .claude/skills/feed-fetcher/scripts/fetch_feed.py \
+            --mode incremental \
+            --state-file state/translated_posts.json \
+            --output output/posts_list.json
+
+      - name: Check for new posts
+        id: check
+        run: |
+          COUNT=$(python -c "
+          import json, sys
+          try:
+            data = json.load(open('output/posts_list.json'))
+            print(len(data.get('untranslated', [])))
+          except:
+            print(0)
+          ")
+          echo "new_posts=$COUNT" >> $GITHUB_OUTPUT
+          echo "신규 번역 대상: $COUNT 건"
+
+      - name: Run translation agent (Claude Code CLI)
+        if: steps.check.outputs.new_posts != '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Claude Code CLI를 통해 오케스트레이터 실행
+          # 실제 Claude Code CLI 설치 및 실행 방법은 설정 후 구체화
+          echo "번역 에이전트 실행 (추후 Claude Code CLI 통합)"
+          # claude --dangerously-skip-permissions \
+          #   "증분 번역 모드: output/posts_list.json 의 untranslated 포스팅을 번역하고 blog/_posts/ 에 저장하라"
+
+      - name: Commit translated posts
+        if: steps.check.outputs.new_posts != '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add blog/_posts/ state/translated_posts.json state/skipped_posts.log output/
+          git diff --cached --quiet || git commit -m "번역 자동 업데이트: $(date +'%Y-%m-%d')"
+          git push
+
+  # ──────────────────────────────────────────
+  # Job 2: Jekyll 빌드 & GitHub Pages 배포
+  # ──────────────────────────────────────────
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: sync-and-translate
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main  # 번역 커밋 반영 후 최신 상태
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: blog
+
+      - name: Build Jekyll site
+        working-directory: blog
+        run: bundle exec jekyll build --destination ../_site
+        env:
+          JEKYLL_ENV: production
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

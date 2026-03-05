@@ -1,0 +1,32 @@
+# Jekyll 빌드 산출물
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# Bundler
+blog/vendor/
+blog/.bundle/
+blog/Gemfile.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+.venv/
+
+# 임시 출력 파일 (상태 파일과 번역 결과는 커밋 대상)
+output/post_*.json
+output/translated_*.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 에디터
+.vscode/
+.idea/
+*.swp

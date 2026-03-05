@@ -1,0 +1,47 @@
+title: "다모다란 한국어 번역"
+description: "Aswath Damodaran 교수의 기업 밸류에이션·재무 분석 블로그 한국어 번역"
+url: ""  # GitHub Pages 배포 후 실제 URL로 교체 (예: https://username.github.io)
+baseurl: ""  # 리포지토리 이름이 username.github.io가 아닌 경우 /repo-name 입력
+
+author:
+  name: "Aswath Damodaran (번역)"
+  original_url: "https://aswathdamodaran.blogspot.com/"
+
+# Jekyll 설정
+markdown: kramdown
+highlighter: rouge
+permalink: /:year/:month/:day/:title/
+
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# 플러그인 (GitHub Pages 지원 플러그인만 사용)
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# 포함/제외 설정
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+
+# 기본값
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      comments: false
+
+# 피드
+feed:
+  posts_limit: 20
+
+# SEO
+lang: ko

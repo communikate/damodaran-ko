@@ -1,0 +1,10 @@
+# 모든 텍스트 파일 — LF로 통일 (GitHub Actions는 Linux에서 실행)
+* text=auto eol=lf
+
+# 바이너리
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
