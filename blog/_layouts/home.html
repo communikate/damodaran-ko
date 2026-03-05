@@ -11,7 +11,7 @@ layout: default
 
   <h2 class="post-list-heading">번역 포스팅 목록</h2>
   <ul class="post-list">
-    {% for post in paginator.posts %}
+    {% for post in site.posts %}
     <li class="post-item">
       <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">
         {{ post.date | date: "%Y.%m.%d" }}
@@ -23,16 +23,4 @@ layout: default
     </li>
     {% endfor %}
   </ul>
-
-  {% if paginator.total_pages > 1 %}
-  <nav class="pagination">
-    {% if paginator.previous_page %}
-      <a href="{{ paginator.previous_page_path | relative_url }}">&larr; 최신글</a>
-    {% endif %}
-    <span>{{ paginator.page }} / {{ paginator.total_pages }}</span>
-    {% if paginator.next_page %}
-      <a href="{{ paginator.next_page_path | relative_url }}">이전글 &rarr;</a>
-    {% endif %}
-  </nav>
-  {% endif %}
 </div>
