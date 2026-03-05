@@ -1,10 +1,9 @@
 source "https://rubygems.org"
 
-gem "github-pages", group: :jekyll_plugins
-gem "jekyll-feed"
+gem "jekyll", "~> 4.3"
+gem "jekyll-feed", "~> 0.17"
 gem "jekyll-sitemap"
-gem "jekyll-seo-tag"
+gem "jekyll-seo-tag", "~> 2.8"
 
-# Windows 전용
-gem "wdm", ">= 0.1.0" if Gem.win_platform?
 gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem "webrick", "~> 1.8"
