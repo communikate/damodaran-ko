@@ -103,6 +103,9 @@ def _process_node(node, lines: list) -> None:
             lines.append(f"[{text}]({href})")
         elif text:
             lines.append(text)
+        else:
+            # 텍스트 없음 — 자식 요소 처리 (예: <a><img/></a>)
+            _process_node_children(node, lines)
 
     elif tag in ("table",):
         lines.append("")
